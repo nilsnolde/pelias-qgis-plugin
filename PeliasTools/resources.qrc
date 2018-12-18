@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/PeliasTools" >
+        <file>static/img/plugin_icon.png</file>
+    </qresource>
+</RCC>
