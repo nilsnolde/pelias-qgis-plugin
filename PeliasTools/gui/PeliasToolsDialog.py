@@ -31,13 +31,14 @@ from PyQt5.QtWidgets import (QAction,
                              QPushButton,
                              QMenu,
                              QMessageBox)
-from PyQt5.QtCore import Qt, QVariant
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QIcon
 from qgis.core import (QgsProject,
                        QgsMapLayer,
                        QgsWkbTypes,
                        QgsMapLayerProxyModel
                        )
+from qgis.gui import QgsFilterLineEdit
 
 from PeliasTools import PLUGIN_NAME, ICON_DIR, DEFAULT_COLOR, __email__, __web__, __version__, __help__
 from .PeliasMainUI import Ui_PeliasMainDialog
@@ -174,7 +175,19 @@ class PeliasToolsDialog(QDialog, Ui_PeliasMainDialog):
 
         self.iface = iface
         self.project = QgsProject.instance()  # invoke a QgsProject instance
+
+        for lineedit_widget in self.findChildren(QgsFilterLineEdit):
+            lineedit_widget.setSelectOnFocus(True)
+
+        # Map Tools
+        self.point_tool = None
+        self.rect_tool = None
         self.last_maptool = self.iface.mapCanvas().mapTool()
+
+        self.layer_list = self.search_struc_list
+        self.clear_buttons = [self.search_rest_circle_clear,
+                              self.search_rest_rect_clear,
+                              self.search_focus_clear]
 
         # # Set up env variables for remaining quota
         # os.environ["ORS_QUOTA"] = "None"
@@ -196,23 +209,75 @@ class PeliasToolsDialog(QDialog, Ui_PeliasMainDialog):
         # Config/Help dialogs
         # self.config_button.clicked.connect(lambda: on_config_click(self))
         self.help_button.clicked.connect(on_help_click)
-        self.search_focus_button.clicked.connect(self._on_map_click)
-        self.search_rest_circle_button.clicked.connect(self._on_map_click)
+
+        # Search Buttons
+        self.search_focus_button.clicked.connect(self._on_point_click)
+        self.search_rest_circle_button.clicked.connect(self._on_point_click)
+        self.search_rest_rect_button.clicked.connect(self._on_rect_click)
+        for button in self.clear_buttons:
+            button.clicked.connect(self._on_clear_click)
+
+        # Structured Buttons
+        self.search_struc_add.clicked.connect(self._on_add_click)
+        self.search_struc_remove.clicked.connect(self._on_remove_click)
+
+    def _on_clear_click(self):
+        """Clear the QgsFilterLineEdit widgets associated with the clear button"""
+        sending_button = self.sender()
+        parent_widget = sending_button.parentWidget()
+        line_edit_widgets = parent_widget.findChildren(QgsFilterLineEdit)
+        for widget in line_edit_widgets:
+            widget.clearValue()
 
 
-    def _on_map_click(self):
+    def _on_remove_click(self):
+        """remove layer: text from list box"""
+        items = self.layer_list.selectedItems()
+        for item in items:
+            row = self.layer_list.row(item)
+            self.layer_list.takeItem(row)
+
+    def _on_add_click(self):
+        """Add layer: text to list box"""
+        current_text = self.search_struc_layers_text.value()
+        current_layer = self.search_struc_layers_combo.currentText()
+
+        if current_text != '':
+            self.layer_list.addItem("=".join([current_layer, current_text]))
+
+    def _on_rect_click(self):
+        """Initialize the Rect map tool to select rectangle in map canvas."""
+        self.showMinimized()
+        self.rect_tool = maptools.RectTool(self.iface.mapCanvas())
+        self.iface.mapCanvas().setMapTool(self.rect_tool)
+        self.rect_tool.updateLabels.connect(self._writeRectLabel)
+
+    def _writeRectLabel(self, rectangle):
+        self.search_rest_rect_xmin.setValue("{0:.6f}".format(rectangle.xMinimum()))
+        self.search_rest_rect_ymin.setValue("{0:.6f}".format(rectangle.yMinimum()))
+        self.search_rest_rect_xmax.setValue("{0:.6f}".format(rectangle.xMaximum()))
+        self.search_rest_rect_ymax.setValue("{0:.6f}".format(rectangle.yMaximum()))
+
+        self.rect_tool.updateLabels.disconnect()
+        self.iface.mapCanvas().setMapTool(self.last_maptool)
+        if self.windowState() == Qt.WindowMinimized:
+            # Window is minimised. Restore it.
+            self.setWindowState(Qt.WindowMaximized)
+            self.activateWindow()
+
+    def _on_point_click(self):
         """
-        Initialize the mapTool to select coordinates in map canvas.
+        Initialize the Point map tool to select coordinates in map canvas.
         """
 
         self.showMinimized()
         sending_button = self.sender().objectName()
-        self.mapTool = maptools.PointTool(self.iface.mapCanvas(), sending_button)
-        self.iface.mapCanvas().setMapTool(self.mapTool)
-        self.mapTool.canvasClicked.connect(self._writeCoordinateLabel)
+        self.point_tool = maptools.PointTool(self.iface.mapCanvas(), sending_button)
+        self.iface.mapCanvas().setMapTool(self.point_tool)
+        self.point_tool.canvasClicked.connect(self._writePointLabel)
 
     # Write map coordinates to text fields
-    def _writeCoordinateLabel(self, point, button):
+    def _writePointLabel(self, point, button):
         """
         Writes the selected coordinates from map canvas to its accompanying label.
 
@@ -235,7 +300,7 @@ class PeliasToolsDialog(QDialog, Ui_PeliasMainDialog):
 
         # Restore old behavior
         QApplication.restoreOverrideCursor()
-        self.mapTool.canvasClicked.disconnect()
+        self.point_tool.canvasClicked.disconnect()
         self.iface.mapCanvas().setMapTool(self.last_maptool)
         if self.windowState() == Qt.WindowMinimized:
             # Window is minimised. Restore it.

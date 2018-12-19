@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Pelias Forward Search</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="sizeConstraint">
@@ -32,7 +32,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="free_tab">
       <attribute name="title">
@@ -43,6 +43,16 @@
         <widget class="QgsFilterLineEdit" name="search_free_text">
          <property name="qgisRelation" stdset="0">
           <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_13">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;div style=&quot;line-height: 150%&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note&lt;/span&gt;, address expansion is not supported at this time, i.e. Main Street/Hauptstraße instead of Main St/Haupstr..&lt;/p&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -197,7 +207,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="search_struc_remove">
                <property name="minimumSize">
                 <size>
                  <width>30</width>
@@ -234,7 +244,7 @@
              </sizepolicy>
             </property>
             <property name="selectionMode">
-             <enum>QAbstractItemView::NoSelection</enum>
+             <enum>QAbstractItemView::MultiSelection</enum>
             </property>
            </widget>
           </item>
@@ -424,6 +434,25 @@
          <string>Circle</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_7">
+         <item row="0" column="5">
+          <widget class="QPushButton" name="search_rest_circle_clear">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>66</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Clear</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="3">
           <widget class="QLabel" name="label_12">
            <property name="sizePolicy">
@@ -437,6 +466,13 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="0">
+          <widget class="QPushButton" name="search_rest_circle_button">
+           <property name="text">
+            <string>Map!</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="1">
           <widget class="QLabel" name="search_rest_circle_label">
            <property name="sizePolicy">
@@ -447,25 +483,6 @@
            </property>
            <property name="text">
             <string>X</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QgsFilterLineEdit" name="search_rest_circle_x">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>120</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="qgisRelation" stdset="0">
-            <string notr="true"/>
            </property>
           </widget>
          </item>
@@ -488,10 +505,25 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QPushButton" name="search_rest_circle_button">
-           <property name="text">
-            <string>Map!</string>
+         <item row="0" column="2">
+          <widget class="QgsFilterLineEdit" name="search_rest_circle_x">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>120</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="clearButtonEnabled">
+            <bool>false</bool>
+           </property>
+           <property name="qgisRelation" stdset="0">
+            <string notr="true"/>
            </property>
           </widget>
          </item>
@@ -537,19 +569,6 @@
             </item>
            </layout>
           </widget>
-         </item>
-         <item row="0" column="5">
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </widget>
@@ -671,6 +690,13 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="search_rest_rect_clear">
+           <property name="text">
+            <string>Clear</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -784,9 +810,6 @@
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Expanding</enum>
-        </property>
         <property name="sizeHint" stdset="0">
          <size>
           <width>40</width>
@@ -794,6 +817,25 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="search_focus_clear">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>66</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Clear</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
