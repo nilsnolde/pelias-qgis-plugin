@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- PeliasTools
+ PeliasGeocoding
                                  A QGIS plugin
  QGIS plugin to query Pelias endpoints from configurable sources.
                              -------------------
@@ -21,42 +21,45 @@
  ***************************************************************************/
 """
 
-import os.path
-
-from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QCursor, QPixmap, QColor
 from PyQt5.QtWidgets import QApplication
 
-from qgis.core import (QgsCoordinateReferenceSystem,
-                       QgsCoordinateTransform,
-                       QgsProject,
-                       QgsWkbTypes,
+from qgis.core import (QgsWkbTypes,
                        QgsPointXY,
-                       QgsRectangle,
-                       Qgis)
+                       QgsRectangle)
 from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
 
-from PeliasTools import ICON_DIR, DEFAULT_COLOR
+from PeliasGeocoding import DEFAULT_COLOR, RESOURCE_PREFIX
+from .transform import transformToWGS
 
 
 class PointTool(QgsMapToolEmitPoint):
-    def __init__(self, canvas, button):
+    """Point Map tool to capture mapped coordinates."""
+
+    def __init__(self, canvas, button='None', icon=None):
+        """
+        :param canvas: current map canvas
+        :type: QgsMapCanvas
+
+        :param button: name of 'Map!' button pressed.
+        :type button: str
+        """
+
         QgsMapToolEmitPoint.__init__(self, canvas)
         self.canvas = canvas
         self.button = button
-        self.cursor = QCursor(QPixmap(os.path.join(ICON_DIR, 'icon_locate.png')).scaledToWidth(48), 24, 24)
-    
+        # self.cursor = QCursor(QPixmap(os.path.join(ICON_DIR, 'icon_locate.png')).scaledToWidth(48), 24, 24)
+        self.cursor = QCursor(QPixmap(RESOURCE_PREFIX + icon).scaledToWidth(48), 24, 24)
+
     canvasClicked = pyqtSignal(['QgsPointXY', 'QString'])
     def canvasReleaseEvent(self, event):
         #Get the click and emit a transformed point
 
-        crsSrc = self.canvas.mapSettings().destinationCrs()
-            
-        crsWGS = QgsCoordinateReferenceSystem(4326)
-    
         point_oldcrs = event.mapPoint()
-        
-        xform = QgsCoordinateTransform(crsSrc, crsWGS, QgsProject.instance())
+
+        crsSrc = self.canvas.mapSettings().destinationCrs()
+        xform = transformToWGS(crsSrc)
         point_newcrs = xform.transform(point_oldcrs)
         
         QApplication.restoreOverrideCursor()
@@ -68,7 +71,14 @@ class PointTool(QgsMapToolEmitPoint):
 
 
 class RectTool(QgsMapToolEmitPoint):
+    """Rectangle Map tool to capture mapped extent."""
+
     def __init__(self, canvas):
+        """
+        :param canvas: current map canvas
+        :type canvas: QgsMapCanvas
+        """
+
         self.canvas = canvas
         QgsMapToolEmitPoint.__init__(self, self.canvas)
 
@@ -79,11 +89,15 @@ class RectTool(QgsMapToolEmitPoint):
         self.reset()
 
     def reset(self):
+        """reset rubberband and captured points."""
+
         self.startPoint = self.endPoint = None
         self.isEmittingPoint = False
         self.rubberBand.reset(True)
 
     def canvasPressEvent(self, e):
+        """Initialize rectangle drawing."""
+
         self.startPoint = self.toMapCoordinates(e.pos())
         self.endPoint = self.startPoint
         self.isEmittingPoint = True
@@ -91,6 +105,8 @@ class RectTool(QgsMapToolEmitPoint):
 
     updateLabels = pyqtSignal("QgsRectangle")
     def canvasReleaseEvent(self, e):
+        """Emits rectangle when button is released, delete rubberband."""
+
         self.isEmittingPoint = False
         r = self.rectangle()
         if r is not None:
@@ -99,6 +115,7 @@ class RectTool(QgsMapToolEmitPoint):
             del self.rubberBand
 
     def canvasMoveEvent(self, e):
+        """Draw rectangle"""
         if not self.isEmittingPoint:
             return
 
@@ -106,6 +123,15 @@ class RectTool(QgsMapToolEmitPoint):
         self.showRect(self.startPoint, self.endPoint)
 
     def showRect(self, startPoint, endPoint):
+        """
+        Build ruberband from two points.
+
+        :param startPoint: first clicked point
+        :type startPoint: QgsPointXY
+
+        :param endPoint: Point at mouse release
+        :type endPoint: QgsPointXY
+        """
         self.rubberBand.reset(QgsWkbTypes.PolygonGeometry)
         if startPoint.x() == endPoint.x() or startPoint.y() == endPoint.y():
             return
@@ -122,12 +148,18 @@ class RectTool(QgsMapToolEmitPoint):
         self.rubberBand.show()
 
     def rectangle(self):
+        """Build rectangle to emit."""
         if self.startPoint is None or self.endPoint is None:
             return None
         elif self.startPoint.x() == self.endPoint.x() or self.startPoint.y() == self.endPoint.y():
             return None
 
-        return QgsRectangle(self.startPoint, self.endPoint)
+        crsSrc = self.canvas.mapSettings().destinationCrs()
+        xform = transformToWGS(crsSrc)
+        startPoint_WGS = xform.transform(self.startPoint)
+        endPoint_WGS = xform.transform(self.endPoint)
+
+        return QgsRectangle(startPoint_WGS, endPoint_WGS)
 
     def deactivate(self):
         super(RectTool, self).deactivate()

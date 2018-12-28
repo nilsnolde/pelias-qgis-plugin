@@ -1,0 +1,22 @@
+The Structured Geocoding algorithm lets you geocode addresses based on separate address parts with optional restrictions and filters.
+
+You need to have a valid API key for one provider ('Web' menu ► 'Pelias Geocoding' ► 'Provider Configuration'). E.g. you can sign up at https://openrouteservice.org/sign-up/.
+
+The input layer can be either geometry or geometryless (e.g. CSV) layers.
+
+The ID field can be used to join the input layer afterwards. Don't use any of the reserved field names.
+
+You can specify a range of address parts from layer fields. Refer to the documentation for a more thorough explanation:
+https://github.com/pelias/documentation/blob/master/structured-geocoding.md
+
+For optional parameters, see a more detailed explanation at https://github.com/pelias/documentation/blob/master/search.md#narrow-your-search.
+
+Focus point lets you prioritize results based on location with a degrading priority further away from the focus point.
+
+You can restrict searches to rectangular and/or circular area, and by country. Country has to be specified according to its alpha-2 or alpha-3 ISO-3166 country code.
+
+Additionally you can filter searches by source (osm = OpenStreetMap, oa = OpenAddresses, wof = WhosOnFirst, gn = Geonames) or by wof layer (administrative unit).
+
+Limit the search output PER FEATURE! If you specify 5, every feature will return 5 geocoded addresses.
+
+The output layer is a Point layer with most Pelias attributes set, in EPSG:4326.

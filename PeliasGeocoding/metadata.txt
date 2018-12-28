@@ -1,5 +1,5 @@
 [general]
-name=Pelias Tools
+name=Pelias Geocoding
 qgisMinimumVersion=3.0
 description=Pelias forward and reverse geocoding for QGIS.
 
@@ -7,7 +7,7 @@ version=0.1
 author=Nils Nolde
 email=nils@gis-ops.com
 
-about=OSM Tools provides access to most of the functions of openrouteservice.org, based on OpenStreetMap. The tool set includes routing, isochrones and matrix calculations, either interactive in the map canvas or from point files. Extensive attributes are set for output files, incl. duration, length and start/end locations.
+about=Pelias Geocoding plugin give access to geocoding endpoints of remote Pelias providers for free text, structured and reverse geocoding. It features an extensive toolset: geocoding from map canvas or batch jobs from layers with processing algorithms.
 
 changelog=2019/01/05 v0.1 First working version
 
@@ -17,9 +17,9 @@ help=https://github.com/pelias/documentation
 
 homepage=https://gis-ops.com
 category=Plugins
-icon=static/img/plugin_icon.png
+icon=gui/img/icon_plugin.png
 experimental=True
 
 deprecated=False
 
-tags=OSM, geocoding, openstreetmap, pelias, reverse geocoding
+tags=OSM, geocoding, openstreetmap, pelias, reverse geocoding, geocode, processing

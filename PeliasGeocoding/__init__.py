@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- PeliasTools
+ PeliasGeocoding
                                  A QGIS plugin
  QGIS plugin to query Pelias endpoints from configurable sources.
                              -------------------
@@ -39,17 +39,11 @@ def classFactory(iface):  # pylint: disable=invalid-name
 
 
 # Define plugin wide constants
-PLUGIN_NAME = 'Pelias Tools'
+PLUGIN_NAME = 'Pelias Geocoding'
 DEFAULT_COLOR = '#a8b1f5'
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ICON_DIR = os.path.join(BASE_DIR, 'static', 'img')
+RESOURCE_PREFIX = ":plugins/PeliasTools/gui/img/"
 CONFIG_PATH = os.path.join(BASE_DIR, 'config.yml')
-# ENV_VARS = {'ORS_REMAINING': 'X-Ratelimit-Remaining',
-#             'ORS_QUOTA': 'X-Ratelimit-Limit'}
-# ENDPOINTS = {'search': '/v1/search',
-#              'directions': '/directions',
-#              'matrix': '/matrix',
-#              'geocoding': 'geocoding'}
 
 # Read metadata.txt
 METADATA = configparser.ConfigParser()
