@@ -28,7 +28,8 @@ from PyQt5.QtWidgets import (QAction,
                              QApplication,
                              QInputDialog,
                              QMenu,
-                             QMessageBox)
+                             QMessageBox,
+                             QToolBar)
 from PyQt5.QtCore import QVariant
 from PyQt5.QtGui import QPixmap, QIcon
 from qgis.core import (QgsProject,
@@ -144,14 +145,17 @@ class PeliasToolsDialogMain:
         self.menu.setIcon(icon_plugin)
         self.menu.addActions(self.actions)
 
-        # Add menu to Web menu and icon to toolbar
+        # Add menu to Web menu and make sure it exsists and add icon to toolbar
+        self.iface.addPluginToWebMenu("_tmp", self.actions[5])
         self.iface.webMenu().addMenu(self.menu)
-        #TODO: move to own toolbar!
-        # self.toolbar = self.iface.addToolbar('Pelias Geocoding')
+        self.iface.removePluginWebMenu("_tmp", self.actions[5])
 
-        self.iface.addWebToolBarIcon(self.actions[0])
-        self.iface.addWebToolBarIcon(self.actions[1])
-        self.iface.addWebToolBarIcon(self.actions[2])
+        self.toolbar = self.iface.addToolBar(u'PeliasGeocoding')
+        self.toolbar.setObjectName(u'Pelias')
+        self.toolbar.addAction(self.actions[0])
+        self.toolbar.addAction(self.actions[1])
+        self.toolbar.addAction(self.actions[2])
+        self.iface.mainWindow().findChild(QToolBar, 'Pelias').setVisible(True)
 
         # Connect slots to events
         self.actions[0].triggered.connect(self.show_main_dialog)
@@ -165,10 +169,11 @@ class PeliasToolsDialogMain:
         """Called when QGIS closes or plugin is deactivated in Plugin Manager"""
 
         self.iface.webMenu().removeAction(self.menu.menuAction())
-        self.iface.removeWebToolBarIcon(self.actions[0])
-        self.iface.removeWebToolBarIcon(self.actions[1])
-        self.iface.removeWebToolBarIcon(self.actions[2])
+        # self.iface.removeWebToolBarIcon(self.actions[0])
+        # self.iface.removeWebToolBarIcon(self.actions[1])
+        # self.iface.removeWebToolBarIcon(self.actions[2])
         QApplication.restoreOverrideCursor()
+        del self.toolbar
         del self.dlg
 
     def _on_about_click(self):
