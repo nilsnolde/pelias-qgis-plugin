@@ -99,7 +99,7 @@ class PeliasToolsDialogMain:
             """
             return QIcon(RESOURCE_PREFIX + f)
 
-        icon_plugin = create_icon('icon_plugin.png')
+        icon_plugin = create_icon('icon_plugin.svg')
 
         self.actions = [
             QAction(
@@ -109,13 +109,13 @@ class PeliasToolsDialogMain:
             ),
             # Quick search button
             QAction(
-                QIcon(QPixmap(RESOURCE_PREFIX + 'icon_locate.png').scaledToWidth(24)),
+                QIcon(QPixmap(RESOURCE_PREFIX + 'icon_forward.svg').scaledToWidth(24)),
                 'Quick Forward Geocode',
                 self.iface.mainWindow()
             ),
             # Quick reverse button
             QAction(
-                QIcon(QPixmap(RESOURCE_PREFIX + 'icon_reverse.png').scaledToWidth(24)),
+                QIcon(QPixmap(RESOURCE_PREFIX + 'icon_reverse.svg').scaledToWidth(24)),
                 'Quick Reverse Geocode',
                 self.iface.mainWindow()
             ),
