@@ -256,7 +256,7 @@ class PeliasToolsDialogMain:
                 layer_out = responsehandler.get_layer('reverse', response)
                 layer_out.updateExtents()
                 self.project.addMapLayer(layer_out)
-                
+
             except:
                 raise
 
@@ -373,19 +373,24 @@ class PeliasToolsDialogMain:
                 exceptions.InvalidKey,
                 exceptions.GenericServerError) as e:
 
-            msg = ": ".join([e.__class__.__name__ , str(e), '\n'])
-            logger.log(msg, 2)
+            msg = [e.__class__.__name__ ,
+                   str(e)]
+            logger.log("{}: {}".format(*msg), 2)
             clnt_msg += "<b>{}</b>: ({})<br>".format(*msg)
 
         except Exception as e:
-            logger.log(": ".join([e.__class__.__name__ , str(e), '\n']), 2)
+            msg = [e.__class__.__name__ ,
+                   str(e)]
+            logger.log("{}: {}".format(*msg), 2)
+            clnt_msg += "<b>{}</b>: {}<br>".format(*msg)
             raise
 
         finally:
             # Write some output
             if clnt.warnings is not None:
-                msg = "\n".join(clnt.warnings)
-                logger.log(msg, 1)
+                for warning in clnt.warnings:
+                    clnt_msg += "<b>Warning</b>: {}<br>".format(warning)
+                    logger.log(warning, 1)
 
             clnt_msg += '<a href="{0}">{0}</a><br>'.format(clnt.url)
             self.dlg.debug_text.setHtml(clnt_msg)
