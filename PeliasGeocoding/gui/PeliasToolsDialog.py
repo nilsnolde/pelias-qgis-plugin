@@ -248,17 +248,22 @@ class PeliasToolsDialogMain:
             provider = [provider for provider in providers if provider['name'] == provider_name][0]
             clnt = client.Client(provider)
             responsehandler = response_handler.ResponseHandler(QgsField('id', QVariant.String))
-            response = clnt.request(provider['endpoints']['reverse'],
-                                     {'point.lat': point.y(),
-                                      'point.lon': point.x(),
-                                      'size': 5})
-            layer_out = responsehandler.get_layer('reverse', response)
-            layer_out.updateExtents()
-            self.project.addMapLayer(layer_out)
+            try:
+                response = clnt.request(provider['endpoints']['reverse'],
+                                         {'point.lat': point.y(),
+                                          'point.lon': point.x(),
+                                          'size': 5})
+                layer_out = responsehandler.get_layer('reverse', response)
+                layer_out.updateExtents()
+                self.project.addMapLayer(layer_out)
+                
+            except:
+                raise
 
-        QApplication.restoreOverrideCursor()
-        self.point_tool.canvasClicked.disconnect()
-        self.iface.mapCanvas().setMapTool(self.last_maptool)
+            finally:
+                QApplication.restoreOverrideCursor()
+                self.point_tool.canvasClicked.disconnect()
+                self.iface.mapCanvas().setMapTool(self.last_maptool)
 
     def _collect_base_params(self):
         """
