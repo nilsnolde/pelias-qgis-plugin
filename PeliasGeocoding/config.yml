@@ -11,7 +11,7 @@ providers:
     reverse: "/reverse"
 - name: "geocode.earth"
   base_url: https://api.geocode.earth/v1
-  key: 
+  key:
   limit: 10
   unit: second
   endpoints:

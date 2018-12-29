@@ -109,13 +109,13 @@ class PeliasToolsDialogMain:
             ),
             # Quick search button
             QAction(
-                QIcon(QPixmap(RESOURCE_PREFIX + 'icon_forward.svg').scaledToWidth(24)),
+                QIcon(QPixmap(RESOURCE_PREFIX + 'icon_forward.svg')),
                 'Quick Forward Geocode',
                 self.iface.mainWindow()
             ),
             # Quick reverse button
             QAction(
-                QIcon(QPixmap(RESOURCE_PREFIX + 'icon_reverse.svg').scaledToWidth(24)),
+                QIcon(QPixmap(RESOURCE_PREFIX + 'icon_reverse.svg')),
                 'Quick Reverse Geocode',
                 self.iface.mainWindow()
             ),
