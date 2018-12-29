@@ -165,6 +165,7 @@ class PeliasToolsDialogMain:
         """Called when QGIS closes or plugin is deactivated in Plugin Manager"""
 
         self.iface.webMenu().removeAction(self.menu.menuAction())
+        self.iface.removeWebToolBarIcon(self.actions[0])
         self.iface.removeWebToolBarIcon(self.actions[1])
         self.iface.removeWebToolBarIcon(self.actions[2])
         QApplication.restoreOverrideCursor()

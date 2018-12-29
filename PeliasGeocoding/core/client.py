@@ -32,7 +32,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from PeliasGeocoding import __version__
 from PeliasGeocoding.utils import logger, exceptions
 
-_USER_AGENT = "PeliasQGISClient.v{}".format(__version__)
+_USER_AGENT = "PeliasQGISClient@v{}".format(__version__)
 
 
 class Client(QObject):

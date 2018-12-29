@@ -19,4 +19,4 @@ Additionally you can filter searches by source (osm = OpenStreetMap, oa = OpenAd
 
 Limit the search output PER FEATURE! If you specify 5, every feature will return 5 geocoded addresses.
 
-The output layer is a Point layer with most Pelias attributes set, in EPSG:4326.
+The output layer is a Point layer with most Pelias attributes set, in EPSG:4326. For more information regarding output fields, visit https://github.com/pelias/documentation/blob/master/response.md.
