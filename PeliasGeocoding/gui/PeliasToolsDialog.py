@@ -169,9 +169,6 @@ class PeliasToolsDialogMain:
         """Called when QGIS closes or plugin is deactivated in Plugin Manager"""
 
         self.iface.webMenu().removeAction(self.menu.menuAction())
-        # self.iface.removeWebToolBarIcon(self.actions[0])
-        # self.iface.removeWebToolBarIcon(self.actions[1])
-        # self.iface.removeWebToolBarIcon(self.actions[2])
         QApplication.restoreOverrideCursor()
         del self.toolbar
         del self.dlg
@@ -179,12 +176,12 @@ class PeliasToolsDialogMain:
     def _on_about_click(self):
         """Slot for click event of About button/menu entry."""
 
-        info = '<b>Pelias Tools</b> provides access to <a href="https://github.com/pelias/pelias" style="color: {0}">Pelias</a> geocoding functionalities.<br><br>' \
+        info = '<b>Pelias Geocoding</b> provides access to <a href="https://github.com/pelias/pelias" style="color: {0}">Pelias</a> geocoding functionalities.<br><br>' \
                '<center><a href=\"https://gis-ops.com\"><img src=\":/plugins/PeliasTools/gui/img/logo_gisops_300.png\"/></a> <br><br></center>' \
                'Author: Nils Nolde<br>' \
                'Email: <a href="mailto:Nils Nolde <{1}>">{1}</a><br>' \
                'Web: <a href="{2}">{2}</a><br>' \
-               'Repo: <a href="https://github.com/nilsnolde/ORStools">github.com/nilsnolde/ORStools</a><br>' \
+               'Repo: <a href="https://github.com/nilsnolde/pelias-qgis-plugin">github.com/nilsnolde/pelias-qgis-plugin</a><br>' \
                'Version: {3}'.format(DEFAULT_COLOR, __email__, __web__, __version__)
 
         QMessageBox.information(
