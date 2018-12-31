@@ -59,7 +59,6 @@ def on_config_click(parent):
     config_dlg = PeliasToolsDialogConfigMain(parent=parent)
     config_dlg.exec_()
 
-
 class PeliasToolsDialogMain:
     """Defines all mandatory QGIS things about dialog."""
 
