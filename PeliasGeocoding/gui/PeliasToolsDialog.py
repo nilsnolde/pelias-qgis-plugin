@@ -121,7 +121,7 @@ class PeliasToolsDialogMain:
             # # Config dialog
             QAction(
                 create_icon('icon_settings.png'),
-                'Provder Configuration',
+                'Provider Configuration',
                 self.iface.mainWindow()
             ),
             # Help
