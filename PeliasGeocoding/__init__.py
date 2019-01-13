@@ -43,7 +43,11 @@ PLUGIN_NAME = 'Pelias Geocoding'
 DEFAULT_COLOR = '#a8b1f5'
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCE_PREFIX = ":plugins/PeliasTools/gui/img/"
-CONFIG_PATH = os.path.join(BASE_DIR, 'config.yml')
+PROVIDERS = os.path.join(BASE_DIR, 'providers.yml')
+
+# Read config.ini
+CONFIG = configparser.ConfigParser()
+CONFIG.read(os.path.join(BASE_DIR, 'config.ini'))
 
 # Read metadata.txt
 METADATA = configparser.ConfigParser()

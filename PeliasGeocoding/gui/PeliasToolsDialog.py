@@ -21,6 +21,7 @@
  ***************************************************************************/
 """
 
+import os.path
 import webbrowser
 
 from PyQt5.QtWidgets import (QAction,
@@ -40,7 +41,7 @@ from . import resources_rc
 
 from .PeliasMainUI import Ui_PeliasMainDialog
 from .PeliasToolsDialogConfig import PeliasToolsDialogConfigMain
-from PeliasGeocoding import PLUGIN_NAME, RESOURCE_PREFIX, DEFAULT_COLOR, __email__, __web__, __version__, __help__
+from PeliasGeocoding import BASE_DIR, CONFIG, PLUGIN_NAME, RESOURCE_PREFIX, DEFAULT_COLOR, __email__, __web__, __version__, __help__
 from PeliasGeocoding.core import client, response_handler
 from PeliasGeocoding.utils import maptools, configmanager, logger, exceptions
 
@@ -48,6 +49,7 @@ from PeliasGeocoding.utils import maptools, configmanager, logger, exceptions
 def on_help_click():
     """Open help URL from button/menu entry."""
     webbrowser.open(__help__)
+
 
 def on_config_click(parent):
     """Pop up provider config window. Outside of classes because it's accessed by multiple dialogs.
@@ -58,6 +60,59 @@ def on_config_click(parent):
 
     config_dlg = PeliasToolsDialogConfigMain(parent=parent)
     config_dlg.exec_()
+
+
+def no_provider_warning(iface):
+    """User warning when no valid provider is specified.
+
+    :param iface: QGIS interface
+    :type iface: QgisInterface
+    """
+
+    QMessageBox.critical(
+        iface.mainWindow(),
+        'Pelias Tools error',
+        'Specify a Pelias API provider for which you hold a valid API key<br><br>'
+        'Visit <a href="https://github.com/nilsnolde/pelias-qgis-plugin#customization">our repository</a> for details.'
+    )
+
+def get_provider_list():
+    """Makes sure to use the last_used provider written in config.ini
+
+    :returns: list of provider objects and provider names
+    """
+
+    providers = configmanager.read_config()['providers']
+    last_used = CONFIG['provider'].get('last_used', providers[0])
+    providers_names = [provider['name'] for provider in providers if provider['key'] not in (None, '', 'localhost')]
+    if len(providers_names) > 0:
+        try:
+            providers_names.remove(last_used)
+            providers_names.insert(0, last_used)
+        except:
+            pass
+    else:
+        providers_names = ['No provider configured yet']
+
+    return providers, providers_names
+
+
+def populate_providers(combobox):
+    """Populates the combombox with the configure providers.
+
+    :param combobox: Dropdown combo box to be populated with providers
+    :type combobox: QComboBox
+    """
+
+    providers, providers_names = get_provider_list()
+    combobox.clear()
+    for provider_name in providers_names:
+        if provider_name != 'No provider configured yet':
+            provider_id = [providers.index(provider) for provider in providers if provider['name'] == provider_name][0]
+            combobox.addItem(provider_name, providers[provider_id])
+        else:
+            combobox.addItem(provider_name)
+
 
 class PeliasToolsDialogMain:
     """Defines all mandatory QGIS things about dialog."""
@@ -121,7 +176,7 @@ class PeliasToolsDialogMain:
             # # Config dialog
             QAction(
                 create_icon('icon_settings.png'),
-                'Provder Configuration',
+                'Provider Configuration',
                 self.iface.mainWindow()
             ),
             # Help
@@ -136,7 +191,6 @@ class PeliasToolsDialogMain:
                 'About',
                 self.iface.mainWindow()
             ),
-
         ]
 
         # Create menu
@@ -172,6 +226,9 @@ class PeliasToolsDialogMain:
         del self.toolbar
         del self.dlg
 
+        with open(os.path.join(BASE_DIR, 'config.ini'), 'w') as configfile:
+            CONFIG.write(configfile)
+
     def _on_about_click(self):
         """Slot for click event of About button/menu entry."""
 
@@ -189,14 +246,14 @@ class PeliasToolsDialogMain:
             info
         )
 
-    def _get_provider_input(self):
+    def _get_provider_dialog_input(self):
         """
         :returns: Returns selected provider from dropdown.
         :rtype: (dict, str, boolean)
         """
 
-        providers = configmanager.read_config()['providers']
-        providers_names = [provider['name'] for provider in providers]
+        providers, providers_names = get_provider_list()
+
         provider_name, ok = QInputDialog.getItem(self.iface.mainWindow(),
                                                 "Pelias Providers",
                                                 "Choose a provider",
@@ -215,7 +272,10 @@ class PeliasToolsDialogMain:
         if not ok:
             return
 
-        providers, provider_name, ok = self._get_provider_input()
+        providers, provider_name, ok = self._get_provider_dialog_input()
+        if provider_name == 'No provider configured yet':
+            no_provider_warning(self.iface)
+            return
         if ok:
             provider = [provider for provider in providers if provider['name'] == provider_name][0]
             clnt = client.Client(provider)
@@ -226,6 +286,7 @@ class PeliasToolsDialogMain:
             layer_out = responsehandler.get_layer('search', response)
             layer_out.updateExtents()
             self.project.addMapLayer(layer_out)
+            CONFIG['provider']['last_used'] = provider_name
 
     def _init_reverse(self):
         """Initializes reverse geocoding"""
@@ -239,7 +300,9 @@ class PeliasToolsDialogMain:
     def _reverse_geocode(self, point):
         """Performs reverse geocoding"""
 
-        providers, provider_name, ok = self._get_provider_input()
+        providers, provider_name, ok = self._get_provider_dialog_input()
+        if provider_name == 'No provider configured yet':
+            no_provider_warning(self.iface)
         if ok:
             provider = [provider for provider in providers if provider['name'] == provider_name][0]
             clnt = client.Client(provider)
@@ -252,14 +315,13 @@ class PeliasToolsDialogMain:
                 layer_out = responsehandler.get_layer('reverse', response)
                 layer_out.updateExtents()
                 self.project.addMapLayer(layer_out)
-
             except:
                 raise
-
             finally:
                 QApplication.restoreOverrideCursor()
                 self.point_tool.canvasClicked.disconnect()
                 self.iface.mapCanvas().setMapTool(self.last_maptool)
+                CONFIG['provider']['last_used'] = provider_name
 
     def _collect_base_params(self):
         """
@@ -313,9 +375,7 @@ class PeliasToolsDialogMain:
             self.dlg.buttonBox.accepted.disconnect(self.dlg.accept)
             self.dlg.buttonBox.accepted.connect(self._run_main_dialog)
 
-            providers = configmanager.read_config()['providers']
-            for provider in providers:
-                self.dlg.provider_combo.addItem(provider['name'], provider)
+        populate_providers(self.dlg.provider_combo)
 
         self.dlg.show()
 
@@ -325,7 +385,11 @@ class PeliasToolsDialogMain:
         self.dlg.debug_text.clear()
 
         provider = self.dlg.provider_combo.currentData()
-        clnt = client.Client(provider=provider)  # provider object has all data from config.yml
+        if provider is None:
+            no_provider_warning(self.iface)
+            return
+
+        clnt = client.Client(provider=provider)  # provider object has all data from providers.yml
         clnt_msg = ''
 
         # Notify user when query limit is reached
@@ -391,6 +455,9 @@ class PeliasToolsDialogMain:
             clnt_msg += '<a href="{0}">{0}</a><br>'.format(clnt.url)
             self.dlg.debug_text.setHtml(clnt_msg)
 
+            # Update last_used provider
+            CONFIG['provider']['last_used'] = provider['name']
+
 
 class PeliasToolsDialog(QDialog, Ui_PeliasMainDialog):
     """Define the custom behaviour of Dialog, more Qt related"""
@@ -424,7 +491,6 @@ class PeliasToolsDialog(QDialog, Ui_PeliasMainDialog):
                               self.search_focus_clear,
                               self.reverse_clear]
 
-        # Disable components for
         # Collapse all QgsCollapsibleGroupBoxs
         collapsible_boxes = self.findChildren(QgsCollapsibleGroupBox)
         for box in collapsible_boxes:
@@ -438,7 +504,7 @@ class PeliasToolsDialog(QDialog, Ui_PeliasMainDialog):
         # self.config_button.clicked.connect(lambda: on_config_click(self))
         self.help_button.clicked.connect(on_help_click)
         self.provider_config.clicked.connect(lambda: on_config_click(self))
-        self.provider_refresh.clicked.connect(self._on_prov_refresh_click)
+        self.provider_refresh.clicked.connect(lambda: populate_providers(self.provider_combo))
 
         # Search Buttons
         self.search_focus_button.clicked.connect(self._on_point_click)
@@ -472,14 +538,6 @@ class PeliasToolsDialog(QDialog, Ui_PeliasMainDialog):
         self.search_focus_group.setEnabled(set_widget_state)
         self.search_rest_rect_group.setEnabled(set_widget_state)
         self.search_rest_circle_group.setEnabled(set_widget_state)
-
-    def _on_prov_refresh_click(self):
-        """Populates provider dropdown with fresh list from config.yml"""
-
-        providers = configmanager.read_config()['providers']
-        self.provider_combo.clear()
-        for provider in providers:
-            self.provider_combo.addItem(provider['name'], provider)
 
     def _on_clear_click(self):
         """Clear the QgsFilterLineEdit widgets associated with the clear button"""

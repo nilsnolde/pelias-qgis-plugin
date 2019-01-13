@@ -44,7 +44,7 @@ class Client(QObject):
         """
         Performs requests to Pelias API services.
 
-        :param provider: A openrouteservice provider from config.yml
+        :param provider: A openrouteservice provider from providers.yml
         :type provider: dict
 
         :param retry_timeout: Timeout across multiple retriable requests, in
@@ -196,6 +196,13 @@ class Client(QObject):
                 str(status_code),
                 "\n".join(body['geocoding']['errors'])
             )
+
+        if status_code == 401:
+            raise exceptions.InvalidKey(
+                str(status_code),
+                "No API key specified"
+            )
+
         # Internal error message for Bad Request
         if status_code == 400:
             raise exceptions.ApiError(

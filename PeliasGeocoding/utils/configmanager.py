@@ -23,18 +23,18 @@
 
 import yaml
 
-from PeliasGeocoding import CONFIG_PATH
+from PeliasGeocoding import PROVIDERS
 
 
 def read_config():
     """
-    Reads config.yml from file and returns the parsed dict.
+    Reads providers.yml from file and returns the parsed dict.
 
     :returns: Parsed settings dictionary.
     :rtype: dict
     """
 
-    with open(CONFIG_PATH) as f:
+    with open(PROVIDERS) as f:
         doc = yaml.safe_load(f)
 
     return doc
@@ -47,5 +47,5 @@ def write_config(new_config):
     :param new_config: new provider settings after altering in dialog.
     :type new_config: dict
     """
-    with open(CONFIG_PATH, 'w') as f:
+    with open(PROVIDERS, 'w') as f:
         yaml.safe_dump(new_config, f)
