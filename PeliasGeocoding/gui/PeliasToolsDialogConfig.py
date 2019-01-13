@@ -54,7 +54,7 @@ class PeliasToolsDialogConfigMain(QDialog, Ui_PeliasToolsDialogConfigBase):
         self.provider_remove.clicked.connect(self._remove_provider)
 
     def accept(self):
-        """When the OK Button is clicked, in-memory temp_config is updated and written to config.yml"""
+        """When the OK Button is clicked, in-memory temp_config is updated and written to providers.yml"""
 
         collapsible_boxes = self.providers.findChildren(QgsCollapsibleGroupBox)
         for idx, box in enumerate(collapsible_boxes):
@@ -72,10 +72,10 @@ class PeliasToolsDialogConfigMain(QDialog, Ui_PeliasToolsDialogConfigBase):
 
         for provider_entry in self.temp_config['providers']:
             self._add_box(provider_entry['name'],
-                           provider_entry['base_url'],
-                           provider_entry['key'],
-                           provider_entry['limit'],
-                           provider_entry['unit'],
+                          provider_entry['base_url'],
+                          provider_entry['key'],
+                          provider_entry['limit'],
+                          provider_entry['unit'],
                           new=False)
 
         self.gridLayout.addWidget(self.providers, 0, 0, 1, 3)
