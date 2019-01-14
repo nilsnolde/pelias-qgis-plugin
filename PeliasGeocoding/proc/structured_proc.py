@@ -73,7 +73,6 @@ class PeliasStrucSearchAlgo(QgsProcessingAlgorithm):
 
     # Save some important references
     crs_out = QgsCoordinateReferenceSystem(4326)
-    providers = configmanager.read_config()['providers']
 
     def initAlgorithm(self, configuration, p_str=None, Any=None, *args, **kwargs):
 
@@ -291,8 +290,9 @@ class PeliasStrucSearchAlgo(QgsProcessingAlgorithm):
         return PeliasStrucSearchAlgo()
 
     def processAlgorithm(self, parameters, context, feedback):
+        providers = configmanager.read_config()['providers']
         # Init client
-        provider = self.providers[self.parameterAsEnum(parameters, self.IN_PROVIDER, context)]
+        provider = providers[self.parameterAsEnum(parameters, self.IN_PROVIDER, context)]
         in_source = self.parameterAsSource(parameters, self.IN_POINTS, context)
         in_id_field_name = self.parameterAsString(parameters, self.IN_ID_FIELD, context)
         in_add_name = self.parameterAsString(parameters, self.IN_ADDR_FIELD, context)

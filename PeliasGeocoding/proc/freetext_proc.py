@@ -66,7 +66,6 @@ class PeliasFreeSearchAlgo(QgsProcessingAlgorithm):
 
     # Save some important references
     crs_out = QgsCoordinateReferenceSystem(4326)
-    providers = configmanager.read_config()['providers']
     # difference = None
 
     def initAlgorithm(self, configuration, p_str=None, Any=None, *args, **kwargs):
@@ -217,8 +216,9 @@ class PeliasFreeSearchAlgo(QgsProcessingAlgorithm):
         return PeliasFreeSearchAlgo()
 
     def processAlgorithm(self, parameters, context, feedback):
+        providers = configmanager.read_config()['providers']
         # Init client
-        provider = self.providers[self.parameterAsEnum(parameters, self.IN_PROVIDER, context)]
+        provider = providers[self.parameterAsEnum(parameters, self.IN_PROVIDER, context)]
         in_source = self.parameterAsSource(parameters, self.IN_POINTS, context)
         in_id_field_name = self.parameterAsString(parameters, self.IN_ID_FIELD, context)
         in_text_field_name = self.parameterAsString(parameters, self.IN_TEXT_FIELD, context)
