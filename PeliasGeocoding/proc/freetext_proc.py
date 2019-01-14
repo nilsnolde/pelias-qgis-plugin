@@ -70,7 +70,7 @@ class PeliasFreeSearchAlgo(QgsProcessingAlgorithm):
 
     def initAlgorithm(self, configuration, p_str=None, Any=None, *args, **kwargs):
 
-        providers = [provider['name'] for provider in self.providers]
+        providers = [provider['name'] for provider in configmanager.read_config()['providers']]
 
         params_dependent = []
         self.addParameter(
@@ -266,6 +266,9 @@ class PeliasFreeSearchAlgo(QgsProcessingAlgorithm):
                                                self.crs_out)
 
         for num, feat_in in enumerate(in_source.getFeatures()):
+            if feedback.isCanceled():
+                break
+
             params_feat = dict()
             if in_text_field_name and feat_in[in_text_field_name]:
                 params_feat['text'] = feat_in[in_text_field_name]

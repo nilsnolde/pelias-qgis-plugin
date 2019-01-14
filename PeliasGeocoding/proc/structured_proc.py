@@ -76,7 +76,7 @@ class PeliasStrucSearchAlgo(QgsProcessingAlgorithm):
 
     def initAlgorithm(self, configuration, p_str=None, Any=None, *args, **kwargs):
 
-        providers = [provider['name'] for provider in self.providers]
+        providers = [provider['name'] for provider in configmanager.read_config()['providers']]
 
         self.addParameter(
             QgsProcessingParameterEnum(
@@ -347,6 +347,9 @@ class PeliasStrucSearchAlgo(QgsProcessingAlgorithm):
                                                self.crs_out)
 
         for num, feat_in in enumerate(in_source.getFeatures()):
+            if feedback.isCanceled():
+                break
+
             params_feat = dict()
             if in_add_name and feat_in[in_add_name]:
                 params_feat['address'] = feat_in[in_add_name]

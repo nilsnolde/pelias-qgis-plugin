@@ -65,7 +65,7 @@ class Client(QObject):
         self.requests_kwargs.update({
             "headers": {"User-Agent": _USER_AGENT,
                         'Content-type': 'application/json',
-                        'timeout': 60}
+                        'timeout': "60"}
         })
 
         self.sent_times = collections.deque("", self.limit)
@@ -156,7 +156,7 @@ class Client(QObject):
             sleep_for = interval - elapsed_since_earliest
 
             # let the client know smth happened
-            self.overQuerylimit.emit(sleep_for)
+            self.overQueryLimit.emit(sleep_for)
             logger.log("{}: {}".format(e.__class__.__name__, str(e)), 1)
 
             time.sleep(sleep_for)
