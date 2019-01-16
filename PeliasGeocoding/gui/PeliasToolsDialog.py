@@ -72,7 +72,7 @@ def no_provider_warning(iface):
     QMessageBox.critical(
         iface.mainWindow(),
         'Pelias Tools error',
-        'Specify a Pelias API provider for which you hold a valid API key<br><br>'
+        'Specify a Pelias API provider for which you hold a valid API key!<br><br>'
         'Visit <a href="https://github.com/nilsnolde/pelias-qgis-plugin#customization">our repository</a> for details.'
     )
 
@@ -84,7 +84,7 @@ def get_provider_list():
 
     providers = configmanager.read_config()['providers']
     last_used = CONFIG['provider'].get('last_used', providers[0])
-    providers_names = [provider['name'] for provider in providers if provider['key'] not in (None, '', 'localhost')]
+    providers_names = [provider['name'] for provider in providers if provider['key'] not in (None, '') or provider['name'] == 'localhost']
     if len(providers_names) > 0:
         try:
             providers_names.remove(last_used)
