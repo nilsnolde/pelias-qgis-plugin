@@ -64,7 +64,8 @@ class Client(QObject):
         self.requests_kwargs = dict()
         self.requests_kwargs.update({
             "headers": {"User-Agent": _USER_AGENT,
-                        'Content-type': 'application/json'}
+                        'Content-type': 'application/json'},
+            'timeout': 60
         })
 
         self.sent_times = collections.deque("", self.limit)
@@ -143,7 +144,7 @@ class Client(QObject):
                 **final_requests_kwargs
             )
         except requests.exceptions.Timeout:
-            raise
+            raise exceptions.Timeout()
 
         try:
             result = self._get_body(response)
@@ -155,7 +156,7 @@ class Client(QObject):
             sleep_for = interval - elapsed_since_earliest
 
             # let the client know smth happened
-            self.overQuerylimit.emit(sleep_for)
+            self.overQueryLimit.emit(sleep_for)
             logger.log("{}: {}".format(e.__class__.__name__, str(e)), 1)
 
             time.sleep(sleep_for)
@@ -194,7 +195,7 @@ class Client(QObject):
         if status_code == 429:
             raise exceptions.OverQueryLimit(
                 str(status_code),
-                "\n".join(body['geocoding']['errors'])
+                str(body)
             )
 
         if status_code == 401:

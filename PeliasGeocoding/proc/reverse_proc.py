@@ -61,12 +61,11 @@ class PeliasReverseAlgo(QgsProcessingAlgorithm):
 
     # Save some important references
     crs_out = QgsCoordinateReferenceSystem(4326)
-    providers = configmanager.read_config()['providers']
     # difference = None
 
     def initAlgorithm(self, configuration, p_str=None, Any=None, *args, **kwargs):
 
-        providers = [provider['name'] for provider in self.providers]
+        providers = [provider['name'] for provider in configmanager.read_config()['providers']]
 
         self.addParameter(
             QgsProcessingParameterEnum(
@@ -167,8 +166,10 @@ class PeliasReverseAlgo(QgsProcessingAlgorithm):
         return PeliasReverseAlgo()
 
     def processAlgorithm(self, parameters, context, feedback):
+        providers = configmanager.read_config()['providers']
+
         # Init client
-        provider = self.providers[self.parameterAsEnum(parameters, self.IN_PROVIDER, context)]
+        provider = providers[self.parameterAsEnum(parameters, self.IN_PROVIDER, context)]
         in_source = self.parameterAsSource(parameters, self.IN_POINTS, context)
         in_id_field_name = self.parameterAsString(parameters, self.IN_ID_FIELD, context)
         in_country = self.parameterAsString(parameters, self.IN_COUNTRY, context)
@@ -201,6 +202,8 @@ class PeliasReverseAlgo(QgsProcessingAlgorithm):
 
         xformer = transform.transformToWGS(in_source.sourceCrs())
         for num, feat_in in enumerate(in_source.getFeatures()):
+            if feedback.isCanceled():
+                break
             x_point = xformer.transform(feat_in.geometry().asPoint())
             params['point.lon'] = x_point.x()
             params['point.lat'] = x_point.y()
