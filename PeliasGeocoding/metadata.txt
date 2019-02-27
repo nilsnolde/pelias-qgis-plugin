@@ -4,13 +4,12 @@ qgisMinimumVersion=3.0
 description=Pelias forward and reverse geocoding toolbox for QGIS.
 
 version=0.1
-author=Nils Nolde
+author=GIS • OPS UG
 email=nils@gis-ops.com
 
 about=Pelias Geocoding plugin give access to geocoding endpoints of remote Pelias providers for free text, structured and reverse geocoding. It features an extensive toolset: geocoding from map canvas or batch jobs from layers with processing algorithms. Sign up for a API key at https://openrouteservice.org/sign-up or ask for an invite to trial https://geocode.earth.
 
-changelog=2018/02/27 change homepage to Pelias documentation
-    2019/01/05 v0.1 First working version
+changelog=2019/01/05 v0.1 First working version
 
 tracker=https://github.com/nilsnolde/pelias-qgis-plugin/issues
 repository=https://github.com/nilsnolde/pelias-qgis-plugin.git
