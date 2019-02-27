@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>460</width>
-    <height>903</height>
+    <height>983</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,23 +23,7 @@
    <property name="sizeConstraint">
     <enum>QLayout::SetMinAndMaxSize</enum>
    </property>
-   <item row="8" column="1">
-    <widget class="QLabel" name="label_15">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=middle&gt;Provided by &lt;a href=&quot;https://gis-ops.com&quot;&gt;&lt;img src=&quot;:/plugins/PeliasTools/gui/img/logo_gisops_300.png&quot; width=100/&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="openExternalLinks">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="3">
+   <item row="2" column="0" colspan="2">
     <widget class="QTabWidget" name="search_tab">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -438,7 +422,7 @@
      </widget>
     </widget>
    </item>
-   <item row="6" column="0" colspan="3">
+   <item row="6" column="0" colspan="2">
     <widget class="QgsCollapsibleGroupBox" name="search_filters_group">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -606,7 +590,7 @@
      </layout>
     </widget>
    </item>
-   <item row="5" column="0" colspan="3">
+   <item row="5" column="0" colspan="2">
     <widget class="QgsCollapsibleGroupBox" name="search_rest_group">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1038,7 +1022,7 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="2">
+   <item row="8" column="1">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -1048,7 +1032,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="3">
+   <item row="3" column="0" colspan="2">
     <widget class="QgsCollapsibleGroupBox" name="search_focus_group">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1176,7 +1160,7 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="3">
+   <item row="1" column="0" colspan="2">
     <widget class="QWidget" name="widget_4" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1242,7 +1226,7 @@
      </layout>
     </widget>
    </item>
-   <item row="7" column="0" colspan="3">
+   <item row="7" column="0" colspan="2">
     <widget class="QTextBrowser" name="debug_text">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
