@@ -15,7 +15,7 @@ tracker=https://github.com/nilsnolde/pelias-qgis-plugin/issues
 repository=https://github.com/nilsnolde/pelias-qgis-plugin.git
 help=https://github.com/pelias/documentation
 
-homepage=https://gis-ops.com
+homepage=https://github.com/pelias/documentation
 category=Plugins
 icon=gui/img/icon_plugin.png
 experimental=False
